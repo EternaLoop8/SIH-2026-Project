@@ -29,7 +29,7 @@ export default function TripPlanner() {
     <section className="mx-auto max-w-xl px-4 py-16">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
-          🧠 Trip Planner CTA
+          Trip Planner CTA
         </h2>
         <p className="text-sm text-slate-500 mt-1">Plan a Trip Around You</p>
       </div>

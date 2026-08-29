@@ -43,7 +43,7 @@ export default function PlanTrip() {
         {/* Page Header */}
         <div className="mb-10 text-center md:text-left">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight sm:text-4xl">
-            AI Smart Travel Planner
+            Travel Planner
           </h1>
           <p className="text-slate-500 mt-1 text-sm font-medium">
             Customize, manage, and calculate budgets for your upcoming local
