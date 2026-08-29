@@ -52,7 +52,7 @@ If you are setting this project up for the first time, or need to pull down upda
 ### 1. Download the Project (First Time Only)
 To download a complete copy of the repository onto your local computer, use `git clone`:
 ```bash
-git clone https://github.com
+git clone https://github.com/EternaLoop8/SIH-2026-Project.git
 ```
 After cloning, always make sure to move into the newly created project folder:
 ```bash
@@ -79,7 +79,7 @@ git pull origin main
 ### 1. Backend Setup
 1. Navigate into the backend directory:
    ```bash
-   cd backend
+   cd server
    ```
 2. Install all required backend dependencies:
    ```bash
@@ -99,7 +99,7 @@ git pull origin main
 ### 2. Frontend Setup
 1. Open a new terminal window, navigate back to the project root, and go into the frontend directory:
    ```bash
-   cd ../frontend
+   cd client
    ```
 2. Install all required frontend base packages and framework wrappers specified in your project template:
    ```bash
