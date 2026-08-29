@@ -1,76 +1,143 @@
-# SIH-2026-Project
+# SIH 2026 Project
+---
 # Local Tourism Platform
 
-A modern Node.js and Express REST API built with MongoDB and Mongoose to power a comprehensive local tourism platform. This service allows users to discover local attractions, view guided tour itineraries, check business operating hours, and find regional events.
-
-## Features
-- **Local Attractions Discovery:** Explore regional highlights, parks, museums, and landmarks.
-- **Robust Configuration Management:** Fail-safe environment checking using custom safety guards.
-- **Secure Architecture:** Built-in support for JSON Web Tokens (JWT) and modern ES Module integration.
+A full-stack web application designed to help users explore local tourist attractions, find events, and manage travel spots. This project is built using a decoupled architecture with a **React frontend** and a **Node.js / Express backend** powered by **MongoDB Atlas**.
 
 ---
 
-## Technical Stack
-- **Runtime:** Node.js (v18+)
-- **Framework:** Express.js (v5.x)
-- **Database:** MongoDB Atlas via Mongoose
-- **Process Manager:** Nodemon (Development)
+## Tech Stack
+
+- **Frontend:** React, Axios (for API requests), React Router DOM, CSS / Tailwind CSS
+- **Backend:** Node.js, Express.js, Mongoose (MongoDB ODM)
+- **Database:** MongoDB Atlas (Cloud Database)
+- **Authentication:** JSON Web Tokens (JWT)
 
 ---
 
-## Getting Started
+## Project Structure
 
-Follow these step-by-step instructions to initialize the project, configure environment variables, and install the necessary dependencies on your local machine.
-
-### 1. Clone or Set Up Your Project Directory
-Ensure your folder structure is organized cleanly as follows:
 ```text
-├── src/
-│   ├── config/
-│   │   ├── config.js
-│   │   └── db.js
-│   └── app.js
-├── .env
-├── server.js
-└── package.json
+local-tourism-platform/
+├── server(backend)/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── config.js
+│   │   │   └── db.js
+│   │   └── app.js
+│   ├── .env
+│   ├── .gitignore
+│   ├── package.json
+│   └── server.js
+└── client(frontend)/
+    ├── public/
+    ├── src/
+    │   ├── assets/       
+    │   ├── components/    
+    │   ├── pages/         
+    │   ├── services/      
+    │   ├── App.jsx        
+    │   └── main.jsx       
+    ├── .gitignore
+    ├── package.json
+    └── README.md
 ```
 
-### 2. Install Dependencies
-Open your terminal in the root directory of the project and run the following command to install all production and development dependencies listed in `package.json`:
+---
+
+## How to Fetch the Project
+
+If you are setting this project up for the first time, or need to pull down updates from a team repository, use the following Git commands in your terminal:
+
+### 1. Download the Project (First Time Only)
+To download a complete copy of the repository onto your local computer, use `git clone`:
 ```bash
-npm install
+git clone https://github.com
 ```
-This will automatically install:
-- **Production (`dependencies`):** `express`, `mongoose`, `dotenv`, `cors`, and `axios`.
-- **Development (`devDependencies`):** `nodemon`.
-
-### 3. Configure Environment Variables
-Create a file named `.env` in the root folder of your project (at the same level as `server.js`). Add the following keys with your specific details:
-
-```env
-PORT=3000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.7iqfkgu.mongodb.net/local_tourism_db?appName=Cluster0
-JWT_SECRET_KEY=your_super_secure_random_secret_key_here
+After cloning, always make sure to move into the newly created project folder:
+```bash
+cd local-tourism-platform
 ```
-> ⚠️ **Important:** Replace `<username>` and `<password>` with your secure credentials from the MongoDB Atlas Dashboard. Ensure you include a database name (like `local_tourism_db`) directly before the `?` character so Mongoose initializes properly. 
-> 
-> *Make sure your network access IP whitelist in MongoDB Atlas is configured to allow access from your current location or anywhere (`0.0.0.0/0`).*
 
-### 4. Run the Project
+### 2. Fetch the Latest Updates (For Existing Setups)
+If you or your teammates have pushed new changes to GitHub and you need to update your local files, run:
+```bash
+git fetch origin
+```
+*Note: `git fetch` safely downloads the latest history from GitHub without overwriting your current code.*
 
-To launch the project in development mode with live-reloading enabled via **Nodemon**, execute:
+### 3. Pull the Changes into Your Active Branch
+To merge those downloaded changes directly into your active working branch (e.g., `main`), run:
+```bash
+git pull origin main
+```
+
+---
+
+## Installation & Setup
+
+### 1. Backend Setup
+1. Navigate into the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install all required backend dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file in the root of your `backend/` folder:
+   ```bash
+   touch .env
+   ```
+4. Open the `.env` file and populate it with your environment variables (replace the placeholders with your real database credentials):
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb+srv://<username>:<password>@cluster0.7iqfkgu.mongodb.net/local_tourism_db?appName=Cluster0
+   JWT_SECRET_KEY=your_super_secret_jwt_string_here
+   ```
+
+### 2. Frontend Setup
+1. Open a new terminal window, navigate back to the project root, and go into the frontend directory:
+   ```bash
+   cd ../frontend
+   ```
+2. Install all required frontend base packages and framework wrappers specified in your project template:
+   ```bash
+   npm install
+   ```
+3. If setting up manually or updating, ensure you have the core application dependencies for routing and API management installed:
+   ```bash
+   npm install react-router-dom axios
+   ```
+
+---
+
+## Running the Application
+
+### Start the Backend
+From inside the `backend/` directory, run the development server with Nodemon tracking:
 ```bash
 npm run dev
 ```
-
-To run the server in a standard production environment without live-reloading, run:
-```bash
-npm start
-```
-
-Upon a successful launch, your terminal output will display:
+*Expected Terminal Output:*
 ```text
 [nodemon] starting `node server.js`
-Server is running on port 3000
 Connected to DB
+Server is running on port 3000
 ```
+
+### Start the Frontend
+From inside the `frontend/` directory, spin up the local development interface:
+```bash
+npm run dev
+```
+*(Or use `npm start` depending on your template package initialization scripts).* 
+
+Your browser should automatically load and display the application interface home screen at `http://localhost:5173` (Vite default) or `http://localhost:3000` (Create React App default).
+
+---
+
+## Security Practices
+
+- **Never Commit Secrets:** The `.env` file contains your production database credentials and is explicitly blocked from Git via the `.gitignore` configuration rules.
+- **Network Whitelisting:** Remember to whitelist your active local IP address inside the MongoDB Atlas Network Access configurations module before attempting to start the server.
