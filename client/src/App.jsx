@@ -5,6 +5,7 @@ import Loading from "./components/common/Loading"; // Make sure path matches you
 // Synchronous Page Views
 import Home from "./pages/Home";
 import PlanTrip from "./pages/PlanTrip";
+import Destinations from "./pages/Destinations";
 
 // Lazy-loaded Dashboards and Auth Views (Bundle Optimization)
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/plan" element={<PlanTrip />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/destinations" element={<Destinations />} />
           <Route path="/experience/:id" element={<Experience />} />
           <Route path="/business/:id" element={<BusinessDetails />} />
           <Route path="/event/:id" element={<EventDetails />} />

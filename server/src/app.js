@@ -1,10 +1,21 @@
 import express from "express";
+import cors from "cors";
+
+import destinationRoutes from "./routes/destinationRoutes.js";
+import placeRoutes from "./routes/placeRoutes.js";
 
 const app = express();
 
-// Standard middleware
+// Middleware
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
-// You can add your app.use("/api", routes) code here later
+// Routes
+app.use("/api/destinations", destinationRoutes);
+app.use("/api/places", placeRoutes);
 
 export default app;
