@@ -1,4 +1,5 @@
 import express from "express";
+import upload  from "../middlewares/multer.js";
 
 import {
   getDestinations,
@@ -12,6 +13,6 @@ router.get("/", getDestinations);
 
 router.get("/:id", getDestinationById);
 
-router.post("/", createDestination);
+router.post("/", upload.any(), createDestination);
 
 export default router;

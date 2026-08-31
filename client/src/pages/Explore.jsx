@@ -1,119 +1,148 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import DestinationCard from "../components/destination/DestinationCard";
+import { getDestinations } from "../services/destinationService";
 
 const Explore = () => {
   const [filter, setFilter] = useState("all");
+  const [destinations, setDestinations] = useState([]);
+  const [filteredDestinations, setFilteredDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const regionalHubs = [
-    {
-      id: 1,
-      name: "Mandu",
-      category: "heritage",
-      desc: "A fortress town celebrated for its ancient Afghan architectural gems and romantic folklore.",
-      img: "https://unsplash.com",
-    },
-    {
-      id: 2,
-      name: "Maheshwar",
-      category: "culture",
-      desc: "A serene riverside town famous for its magnificent Holkar ghats and delicate handloom weaving.",
-      img: "https://unsplash.com",
-    },
-    {
-      id: 3,
-      name: "Orchha",
-      category: "heritage",
-      desc: "The historic bundle kingdom heartland marked by riverside spires, chhatris, and grand places.",
-      img: "https://unsplash.com",
-    },
-    {
-      id: 4,
-      name: "Pachmarhi",
-      category: "nature",
-      desc: "A lush hill station sanctuary offering hidden waterfalls, ancient caves, and viewing cliffs.",
-      img: "https://unsplash.com",
-    },
-  ];
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        setLoading(true);
+        const result = await getDestinations();
+        
+        // Strict normalization: extract array regardless of backend format wrapper
+        let dataArray = [];
+        if (result && Array.isArray(result.data)) {
+          dataArray = result.data;
+        } else if (Array.isArray(result)) {
+          dataArray = result;
+        } else if (result && typeof result === "object") {
+          // If response wraps the array in another key like 'destinations'
+          dataArray = Object.values(result).find(val => Array.isArray(val)) || [];
+        }
 
-  const filteredHubs =
-    filter === "all"
-      ? regionalHubs
-      : regionalHubs.filter((h) => h.category === filter);
+        setDestinations(dataArray);
+        setFilteredDestinations(dataArray);
+      } catch (error) {
+        console.error("API Fetch Error:", error);
+        setError("Unable to load destinations. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
+
+  // Safely sync filters without crashing if destinations isn't an array
+  useEffect(() => {
+    const safeDestinations = Array.isArray(destinations) ? destinations : [];
+    
+    if (filter === "all") {
+      setFilteredDestinations(safeDestinations);
+    } else {
+      setFilteredDestinations(
+        safeDestinations.filter((dest) => dest?.category?.toLowerCase() === filter.toLowerCase())
+      );
+    }
+  }, [filter, destinations]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <header className="mb-8 max-w-2xl">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
-          Regional Wonders
-        </h1>
-        <p className="mt-2 text-sm text-gray-500">
-          Unpack destinations rich in heritage frameworks, architectural loops,
-          and hidden local ecosystems.
-        </p>
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Dynamic Header Section */}
+      <header className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="max-w-2xl">
+          <p className="mb-2 text-sm font-bold uppercase tracking-widest text-indigo-600">
+            Explore India
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            Regional Wonders
+          </h1>
+          <p className="mt-3 text-base text-slate-500">
+            Discover frameworks, historical structures, local culture, and experiences beyond the usual tourist spots.
+          </p>
+        </div>
+
+        {/* Counter Pill */}
+        {!loading && !error && (
+          <div className="inline-flex items-center self-start rounded-full bg-indigo-50 px-4 py-1.5 text-sm font-semibold text-indigo-700 md:self-end">
+            {filteredDestinations.length}{" "}
+            {filteredDestinations.length === 1 ? "destination" : "destinations"}
+          </div>
+        )}
       </header>
 
-      {/* Segment Filter Selection Switches */}
-      <div className="flex flex-wrap items-center gap-2 mb-8 border-b border-gray-100 pb-4">
-        {[
-          { key: "all", label: "Show All Locations" },
-          { key: "heritage", label: "Ancient Heritage" },
-          { key: "culture", label: "Cultural Hubs" },
-          { key: "nature", label: "Nature Escapes" },
-        ].map((btn) => (
+      {/* Styled Filter Controls */}
+      <nav className="mb-8 flex flex-wrap gap-2.5" aria-label="Destination Categories">
+        {["all", "heritage", "nature", "culture"].map((cat) => (
           <button
-            key={btn.key}
-            onClick={() => setFilter(btn.key)}
-            className={`text-xs font-semibold px-4 py-2 rounded-full border transition-all cursor-pointer ${
-              filter === btn.key
-                ? "bg-gray-900 border-gray-900 text-white shadow-xs"
-                : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 capitalize ${
+              filter === cat
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
             }`}
           >
-            {btn.label}
+            {cat}
           </button>
         ))}
-      </div>
+      </nav>
 
-      {/* Interactive Grid Index */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredHubs.map((hub) => (
-          <div
-            key={hub.id}
-            className="group bg-white rounded-xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col"
-          >
-            <div className="aspect-16/11 bg-gray-50 overflow-hidden relative">
-              <img
-                src={hub.img}
-                alt={hub.name}
-                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+      {/* Core Display Area */}
+      <main className="rounded-3xl bg-slate-50 border border-slate-100 p-6 sm:p-10">
+        {/* Loading Skeleton */}
+        {loading && (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-96 w-full animate-pulse rounded-2xl bg-slate-200"
               />
-              <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 text-gray-700 rounded-sm">
-                {hub.category}
-              </span>
-            </div>
-            <div className="p-4 flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="font-bold text-gray-900 text-base">
-                  {hub.name}
-                </h3>
-                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed line-clamp-3">
-                  {hub.desc}
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-gray-50">
-                <a
-                  href={`/explore/${hub.name.toLowerCase()}`}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center"
-                >
-                  Explore Circuit{" "}
-                  <span className="ml-1 transition-transform group-hover:translate-x-0.5">
-                    &rarr;
-                  </span>
-                </a>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        )}
+
+        {/* Error Notification */}
+        {!loading && error && (
+          <div className="mx-auto max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-sm">
+            <p className="font-semibold text-red-800">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 text-xs font-bold uppercase tracking-wider text-red-600 hover:underline"
+            >
+              Reload Page
+            </button>
+          </div>
+        )}
+
+        {/* Successful Grid Results */}
+        {!loading && !error && filteredDestinations.length > 0 && (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredDestinations.map((destination) => (
+              <DestinationCard key={destination._id || destination.id} destination={destination} />
+            ))}
+          </div>
+        )}
+
+        {/* Empty Search State */}
+        {!loading && !error && filteredDestinations.length === 0 && (
+          <div className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-xl shadow-inner">
+              🔍
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">No destinations found</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Try choosing another regional filter or checking back later.
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

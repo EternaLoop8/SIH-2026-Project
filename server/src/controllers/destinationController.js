@@ -44,20 +44,59 @@ export const getDestinationById = async (req, res) => {
 };
 
 
-// POST /api/destinations
+/// POST /api/destinations
 export const createDestination = async (req, res) => {
   try {
-    const destination = await Destination.create(req.body);
+    const files = req.files || (req.file ? [req.file] : null);
+    if (!files || files.length === 0) {
+      return res.status(400).json({ success: false, message: "Please upload an image file" });
+    }
 
-    res.status(201).json({
-      success: true,
-      message: "Destination created successfully",
-      data: destination,
+    const uploadedFile = files[0]; 
+
+    // Extract latitude and longitude directly from req.body.location
+    const lat = req.body.location?.latitude;
+    const lng = req.body.location?.longitude;
+
+    // 💡 FIX: Handle tag formatting seamlessly (handles single strings or comma-separated lists)
+    let processedTags = [];
+    if (req.body.tags) {
+      if (Array.isArray(req.body.tags)) {
+        processedTags = req.body.tags;
+      } else if (typeof req.body.tags === 'string') {
+        processedTags = req.body.tags.split(',').map(tag => tag.trim());
+      }
+    }
+
+    const destinationData = {
+      name: req.body.name,               
+      description: req.body.description,
+      state: req.body.state,             
+      
+      // 💡 ADDED MISSING FIELDS: Maps the extra data coming from req.body
+      bestTimeToVisit: req.body.bestTimeToVisit, 
+      estimatedDays: req.body.estimatedDays ? Number(req.body.estimatedDays) : undefined,
+      tags: processedTags,
+      
+      image: {
+        url: uploadedFile.path,          
+        public_id: uploadedFile.filename 
+      },
+      location: {
+        latitude: lat ? Number(lat) : undefined,
+        longitude: lng ? Number(lng) : undefined
+      }
+    };
+
+    const destination = await Destination.create(destinationData);
+    
+    res.status(201).json({ 
+      success: true, 
+      message: "Destination created successfully", 
+      data: destination 
     });
+
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).json({ success: false, message: error.message });
   }
 };

@@ -1,89 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BusinessCard from "./BusinessCard";
 import BusinessProfile from "./BusinessProfile";
-
-// Mock Dataset of Local Businesses
-const LOCAL_BUSINESSES = [
-  {
-    id: "b1",
-    name: "The Daily Grind Cafe",
-    category: "Coffee & Bakery",
-    rating: 4.8,
-    reviewCount: 245,
-    neighborhood: "Downtown",
-    image: "https://unsplash.com",
-    isOpen: true,
-    description:
-      "A cozy corner spot serving artisanal, locally-roasted coffee, loose-leaf teas, and fresh house-baked pastries every morning. Perfect for remote work or a casual catch-up.",
-    address: "124 Main Street, Downtown, NY 10001",
-    phone: "(555) 234-5678",
-    website: "thedailygrindcafe.com",
-    tags: ["Free WiFi", "Outdoor Seating", "Vegan Options"],
-    hours: {
-      Monday: "7 AM - 6 PM",
-      Tuesday: "7 AM - 6 PM",
-      Wednesday: "7 AM - 6 PM",
-      Thursday: "7 AM - 8 PM",
-      Friday: "7 AM - 9 PM",
-      Saturday: "8 AM - 9 PM",
-      Sunday: "8 AM - 4 PM",
-    },
-  },
-  {
-    id: "b2",
-    name: "Apex Fitness Hub",
-    category: "Gym & Wellness",
-    rating: 4.9,
-    reviewCount: 182,
-    neighborhood: "West End",
-    image: "https://unsplash.com",
-    isOpen: true,
-    description:
-      "State-of-the-art strength training equipment, functional fitness zones, and daily high-intensity group classes led by elite certified personal trainers.",
-    address: "580 Parkway Blvd, West End, NY 10003",
-    phone: "(555) 876-5432",
-    website: "apexfitnesshub.com",
-    tags: ["24/7 Access", "Showers", "Personal Training"],
-    hours: {
-      Monday: "Open 24 Hours",
-      Tuesday: "Open 24 Hours",
-      Wednesday: "Open 24 Hours",
-      Thursday: "Open 24 Hours",
-      Friday: "Closes at 10 PM",
-      Saturday: "6 AM - 8 PM",
-      Sunday: "8 AM - 6 PM",
-    },
-  },
-  {
-    id: "b3",
-    name: "Bella Italia Ristorante",
-    category: "Restaurant",
-    rating: 4.7,
-    reviewCount: 310,
-    neighborhood: "Little Italy",
-    image: "https://unsplash.com",
-    isOpen: false,
-    description:
-      "An upscale dining experience bringing old-world Italian tradition right to your neighborhood. Famous for wood-fired pizzas and family-recipe pasta sauces.",
-    address: "42 Mulberry St, Little Italy, NY 10013",
-    phone: "(555) 345-6789",
-    website: "bellaitaliany.com",
-    tags: ["Wine Bar", "Takeout Available", "Romantic Vibe"],
-    hours: {
-      Monday: "Closed",
-      Tuesday: "4 PM - 10 PM",
-      Wednesday: "4 PM - 10 PM",
-      Thursday: "4 PM - 10 PM",
-      Friday: "4 PM - 11 PM",
-      Saturday: "12 PM - 11 PM",
-      Sunday: "12 PM - 9 PM",
-    },
-  },
-];
+import { getBusiness } from "../../services/businessService";
 
 export default function BusinessGrid() {
-  // 🟢 Track which business is selected for profile view. Initialized to null.
+  // 💡 State variables to manage business collection data pipeline structures
+  const [businesses, setBusinesses] = useState([]);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 1. Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 3;
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const result = await getBusiness();
+
+        // 💡 Safely extract data block if success flag is true
+        if (result && result.success) {
+          setBusinesses(result.data);
+        } else {
+          setError("Failed to process server properties.");
+        }
+      } catch (err) {
+        console.error("Failed to fetch business pipeline:", err);
+        setError("Network configuration error. Check your server connection.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // Operational State Interceptors
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center text-sm font-medium text-slate-500">
+        Loading dynamic businesses...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-64 items-center justify-center text-sm font-medium text-red-500">
+        {error}
+      </div>
+    );
+  }
+
+  if (businesses.length === 0) {
+    return (
+      <div className="flex h-64 items-center justify-center text-sm font-medium text-slate-400">
+        No businesses found in the database.
+      </div>
+    );
+  }
 
   // 1. CONDITIONAL VIEW: If a business card was clicked, show ONLY its full profile layout
   if (selectedBusiness) {
@@ -96,6 +72,24 @@ export default function BusinessGrid() {
       </div>
     );
   }
+
+  // 2. Calculate the slice of destinations for the current page
+  const totalPages = Math.ceil(businesses.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentBusinesses = businesses.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+
+  // 3. Navigation Handlers
+  const handlePrev = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   // 2. LIST VIEW: Default container rendering the full catalog of business items
   return (
@@ -113,15 +107,37 @@ export default function BusinessGrid() {
 
       {/* Grid Wrapper rendering individual cards */}
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {LOCAL_BUSINESSES.map((business) => (
+        {currentBusinesses.map((biz) => (
           <BusinessCard
-            key={business.id}
-            business={business}
-            // 🟢 Pass click handler to capture business instance details
-            onViewProfile={() => setSelectedBusiness(business)}
+            key={biz._id} // Maps cleanly to MongoDB unique identifier string
+            business={biz}
+            // 🟢 Triggers conditional logic to open profile detail layout
+            onViewProfile={() => setSelectedBusiness(biz)}
           />
         ))}
       </div>
+      {/* Arrow Navigation Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 mt-4 pb-8">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-slate-100 border rounded-lg text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200"
+          >
+            &larr; Previous
+          </button>
+          <span className="text-sm font-medium text-slate-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-slate-100 border rounded-lg text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      )}
     </section>
   );
 }

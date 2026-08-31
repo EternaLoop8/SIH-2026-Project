@@ -5,7 +5,6 @@ import Loading from "./components/common/Loading"; // Make sure path matches you
 // Synchronous Page Views
 import Home from "./pages/Home";
 import PlanTrip from "./pages/PlanTrip";
-import Destinations from "./pages/Destinations";
 
 // Lazy-loaded Dashboards and Auth Views (Bundle Optimization)
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -20,7 +19,7 @@ const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Experience = lazy(() => import("./pages/Experience"));
-const BusinessDetails = lazy(() => import("./pages/BusinessDetails"));
+const BusinessDetails = lazy(() => import("./pages/Business"));
 const EventDetails = lazy(() => import("./pages/EventDetails"));
 
 const App = () => {
@@ -32,10 +31,9 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/plan" element={<PlanTrip />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/destinations" element={<Destinations />} />
-          <Route path="/experience/:id" element={<Experience />} />
-          <Route path="/business/:id" element={<BusinessDetails />} />
-          <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/business" element={<BusinessDetails />} />
+          <Route path="/event" element={<EventDetails />} />
 
           {/* Authentication Access Gateways */}
           <Route path="/login" element={<Login />} />

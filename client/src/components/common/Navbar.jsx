@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Logo1 from "../../assets/Logo1.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="shrink-0 flex items-center">
             <img
-              className="h-8 w-auto object-contain cursor-pointer"
-              src="/logo.svg"
+              className="h-15 w-auto object-contain cursor-pointer"
+              src={Logo1}
               alt="Logo"
             />
           </div>
@@ -28,19 +29,19 @@ const Navbar = () => {
             </li>
             <li
               className="hover:text-blue-600 cursor-pointer transition-colors"
-              onClick={() => navigate("/experience/:id")}
+              onClick={() => navigate("/experience")}
             >
               Experience
             </li>
             <li
               className="hover:text-blue-600 cursor-pointer transition-colors"
-              onClick={() => navigate("/event/:id")}
+              onClick={() => navigate("/event")}
             >
               Events
             </li>
             <li
               className="hover:text-blue-600 cursor-pointer transition-colors"
-              onClick={() => navigate("/business/:id")}
+              onClick={() => navigate("/business")}
             >
               Business
             </li>

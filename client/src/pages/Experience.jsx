@@ -1,97 +1,129 @@
+import { useEffect, useState } from "react";
+import ExperienceCard from "../components/experience/ExperienceCard";
+import { getExperience } from "../services/experienceService.js";
+
 const Experience = () => {
-  // Static configuration representing an immersive community loop mapping
-  const exp = {
-    title: "Handloom Weaving & Ghat Workshop",
-    location: "Maheshwar, MP",
-    duration: "4 Hours duration",
-    host: "Master Weaver Ramesh & Family",
-    price: "₹1,200 per attendee",
-    overview:
-      "Step directly inside a functional artisan cluster household. Learn how raw silk threads transition into delicate motifs on traditional wooden handlooms, and conclude the day listening to local history tales as the sun sets over the Narmada River Ghats.",
-    inclusions: [
-      "Guided interaction at a live handloom unit",
-      "Handloom operational tutorial session",
-      "Traditional Malwa snack plate",
-      "Mineral water supplies",
-    ],
-    bannerImg: "https://unsplash.com",
-  };
+  const [filter, setFilter] = useState("all");
+  const [experiences, setExperiences] = useState([]);
+  const [filteredExperiences, setFilteredExperiences] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchExperiences = async () => {
+      try {
+        setLoading(true);
+        const result = await getExperience();
+        
+        let dataArray = [];
+        if (result && Array.isArray(result.data)) {
+          dataArray = result.data;
+        } else if (Array.isArray(result)) {
+          dataArray = result;
+        } else if (result && typeof result === "object") {
+          dataArray = Object.values(result).find(val => Array.isArray(val)) || [];
+        }
+
+        setExperiences(dataArray);
+        setFilteredExperiences(dataArray);
+      } catch (error) {
+        console.error("Experience Fetch Error:", error);
+        setError("Unable to load experiences. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExperiences();
+  }, []);
+
+  useEffect(() => {
+    const safeExperiences = Array.isArray(experiences) ? experiences : [];
+    
+    if (filter === "all") {
+      setFilteredExperiences(safeExperiences);
+    } else {
+      setFilteredExperiences(
+        safeExperiences.filter((exp) => exp?.type?.toLowerCase() === filter.toLowerCase())
+      );
+    }
+  }, [filter, experiences]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Banner Media Block */}
-      <div className="w-full aspect-21/9 sm:aspect-16/6 rounded-2xl overflow-hidden relative shadow-xs mb-8 bg-gray-100">
-        <img
-          src={exp.bannerImg}
-          alt={exp.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10" />
-        <div className="absolute bottom-6 left-6 right-6 z-20 text-white">
-          <span className="bg-blue-600 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-sm uppercase">
-            Community-Led Experience
-          </span>
-          <h1 className="text-2xl sm:text-4xl font-black mt-2 tracking-tight">
-            {exp.title}
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <header className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="max-w-2xl">
+          <p className="mb-2 text-sm font-bold uppercase tracking-widest text-indigo-600">
+            Curated Activities
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            Immersive Experiences
           </h1>
-          <p className="text-xs sm:text-sm text-gray-200 mt-1">
-            {exp.location} • Hosted by {exp.host}
+          <p className="mt-3 text-base text-slate-500">
+            Book local treks, culinary workshops, heritage walks, and unique adventures hand-picked for travelers.
           </p>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Core Contents Area */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-xs">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">
-              Activity Breakdown
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {exp.overview}
-            </p>
+        {!loading && !error && (
+          <div className="inline-flex items-center self-start rounded-full bg-indigo-50 px-4 py-1.5 text-sm font-semibold text-indigo-700 md:self-end">
+            {filteredExperiences.length}{" "}
+            {filteredExperiences.length === 1 ? "experience" : "experiences"}
           </div>
+        )}
+      </header>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-xs">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              What's Covered in the Package
-            </h2>
-            <ul className="space-y-2.5">
-              {exp.inclusions.map((inc, i) => (
-                <li key={i} className="flex items-start text-sm text-gray-600">
-                  <span className="text-blue-500 mr-2.5 mt-0.5 font-bold">
-                    ✓
-                  </span>
-                  <span>{inc}</span>
-                </li>
-              ))}
-            </ul>
+      <nav className="mb-8 flex flex-wrap gap-2.5" aria-label="Experience Categories">
+        {["all", "adventure", "workshop", "culture", "nature"].map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 capitalize ${
+              filter === cat
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </nav>
+
+      <main className="rounded-3xl bg-slate-50 border border-slate-100 p-6 sm:p-10">
+        {loading && (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="h-96 w-full animate-pulse rounded-2xl bg-slate-200" />
+            ))}
           </div>
-        </div>
+        )}
 
-        {/* Dynamic Booking Details Sidebar */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-xs text-center">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Price Index
-            </p>
-            <p className="text-3xl font-extrabold text-gray-900 mt-1">
-              {exp.price.split(" per")[0]}
-            </p>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {exp.price.split("₹1,200 ")[1]}
-            </p>
-
-            <div className="my-4 p-3 bg-gray-50 border border-gray-100 rounded-lg text-xs font-mono text-gray-500">
-              ⏱️ {exp.duration}
-            </div>
-
-            <button className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer shadow-xs">
-              Check Session Availability
+        {!loading && error && (
+          <div className="mx-auto max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center shadow-sm">
+            <p className="font-semibold text-red-800">{error}</p>
+            <button onClick={() => window.location.reload()} className="mt-4 text-xs font-bold uppercase tracking-wider text-red-600 hover:underline">
+              Reload Page
             </button>
           </div>
-        </div>
-      </div>
+        )}
+
+        {!loading && !error && filteredExperiences.length > 0 && (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredExperiences.map((experience) => (
+              <ExperienceCard key={experience._id || experience.id} experience={experience} />
+            ))}
+          </div>
+        )}
+
+        {!loading && !error && filteredExperiences.length === 0 && (
+          <div className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-xl shadow-inner">
+              🔍
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">No experiences found</h3>
+            <p className="mt-1 text-sm text-slate-500">Try choosing another activity filter.</p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

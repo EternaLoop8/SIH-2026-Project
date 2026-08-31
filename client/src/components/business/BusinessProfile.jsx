@@ -4,27 +4,32 @@ export default function BusinessProfile({ business, onBack }) {
   const {
     name,
     category,
-    rating,
-    reviewCount,
+    rating = 0,
+    reviewCount = 0,
     description,
     address,
     phone,
     website,
     hours,
-    image,
-    tags,
+    image, // This is an object: { url, public_id }
+    tags = [],
     isOpen,
+    neighbourhood, // 💡 Added to align directly with your database schema
   } = business;
+
+  // 💡 FIXED: Safely unpacks the nested object structure link or pulls a beautiful backdrop image
+  const coverUrl = image?.url;
 
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* Cover / Header Banner */}
       <div className="relative h-64 sm:h-80 bg-slate-900">
         <img
-          src={image}
-          alt={name}
+          src={coverUrl} // 💡 FIXED: Points safely to unpacked url variable
+          alt={name || "Business Cover"}
           className="w-full h-full object-cover opacity-60"
         />
+        {/* Tailwind v4 structural background replacement anchor logic */}
         <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-transparent" />
         <div className="absolute bottom-6 left-0 w-full px-4 sm:px-8">
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -36,7 +41,7 @@ export default function BusinessProfile({ business, onBack }) {
                 ← Back to listings
               </button>
               <span className="bg-indigo-600 text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-2 inline-block">
-                {category}
+                {category || "Local Business"}
               </span>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 {name}
@@ -47,7 +52,7 @@ export default function BusinessProfile({ business, onBack }) {
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-3 self-start sm:self-auto">
               <div className="text-center">
                 <span className="text-xl font-extrabold text-white block">
-                  ★ {rating.toFixed(1)}
+                  ★ {typeof rating === "number" ? rating.toFixed(1) : "0.0"}
                 </span>
                 <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">
                   {reviewCount} Reviews
@@ -76,37 +81,41 @@ export default function BusinessProfile({ business, onBack }) {
               About the Business
             </h2>
             <p className="text-slate-600 leading-relaxed text-sm">
-              {description}
+              {description || "No description provided for this local business profile yet."}
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-2">
-              {tags?.map((tag, idx) => (
-                <span
-                  key={idx}
-                  className="bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-1 rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {tags && tags.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {tags.map((tag, idx) => (
+                  <span
+                    key={`${tag}-${idx}`}
+                    className="bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-1 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Operational Hours Calendar */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">
-              Operating Hours
-            </h2>
-            <div className="divide-y divide-slate-100">
-              {Object.entries(hours || {}).map(([day, time]) => (
-                <div key={day} className="flex justify-between py-2.5 text-sm">
-                  <span className="capitalize font-medium text-slate-600">
-                    {day}
-                  </span>
-                  <span className="text-slate-800 font-semibold">{time}</span>
-                </div>
-              ))}
+          {hours && Object.keys(hours).length > 0 && (
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">
+                Operating Hours
+              </h2>
+              <div className="divide-y divide-slate-100">
+                {Object.entries(hours).map(([day, time]) => (
+                  <div key={day} className="flex justify-between py-2.5 text-sm">
+                    <span className="capitalize font-medium text-slate-600">
+                      {day}
+                    </span>
+                    <span className="text-slate-800 font-semibold">{time}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Right Column: Contact Widget Action Box */}
@@ -119,23 +128,29 @@ export default function BusinessProfile({ business, onBack }) {
             <div className="space-y-4 text-sm text-slate-600 mb-6">
               <div className="flex gap-3">
                 <span className="text-base shrink-0">📍</span>
-                <p className="font-medium text-slate-700">{address}</p>
+                <p className="font-medium text-slate-700">
+                  {address || neighbourhood || "Address Unavailable"}
+                </p>
               </div>
-              <div className="flex gap-3 items-center">
-                <span className="text-base shrink-0">📞</span>
-                <p className="font-semibold text-slate-900">{phone}</p>
-              </div>
-              <div className="flex gap-3 items-center">
-                <span className="text-base shrink-0">🌐</span>
-                <a
-                  href={`https://${website}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-indigo-600 hover:underline font-semibold break-all"
-                >
-                  {website}
-                </a>
-              </div>
+              {phone && (
+                <div className="flex gap-3 items-center">
+                  <span className="text-base shrink-0">📞</span>
+                  <p className="font-semibold text-slate-900">{phone}</p>
+                </div>
+              )}
+              {website && (
+                <div className="flex gap-3 items-center">
+                  <span className="text-base shrink-0">🌐</span>
+                  <a
+                    href={`https://${website.replace(/^(https?:\/\/)?(www\.)?/, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-indigo-600 hover:underline font-semibold break-all"
+                  >
+                    {website}
+                  </a>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">

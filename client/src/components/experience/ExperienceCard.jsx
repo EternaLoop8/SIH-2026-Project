@@ -1,25 +1,30 @@
 export default function ExperienceCard({ experience }) {
-  // Guard clause to prevent undefined destructuring crashes
   if (!experience) return null;
 
   const {
     title,
-    category,
+    Categories = [], // 💡 FIXED: Matches case-sensitive Schema name 'Categories' (array)
     duration,
     price,
-    rating,
-    reviewsCount,
+    rating = 0,
+    reviewCount = 0, // 💡 FIXED: Matches schema parameter name 'reviewCount'
     image,
     isPopular,
   } = experience;
 
+  // 💡 FIXED: Unpacks image object string safely
+  const imageUrl = image?.url || "https://unsplash.com";
+
+  // Display clean currency sign fallback (using ₹ for Indian Rupees context if matching your database numbers)
+  const currencySign = "₹"; 
+
   return (
-    <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-100">
+    <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-100 flex flex-col h-full">
       {/* Visual Asset Header */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden shrink-0">
         <img
-          src={image}
-          alt={title}
+          src={imageUrl}
+          alt={title || "Experience"}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {/* Conditional Highlight Badge */}
@@ -28,28 +33,33 @@ export default function ExperienceCard({ experience }) {
             Best Seller
           </div>
         )}
-        <div className="absolute bottom-4 right-4 rounded-xl bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
-          ⏱️ {duration}
-        </div>
+        {duration && (
+          <div className="absolute bottom-4 right-4 rounded-xl bg-slate-900/80 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+            ⏱️ {duration} {duration === 1 ? "Hr" : "Hrs"}
+          </div>
+        )}
       </div>
 
       {/* Main Metadata Text Stack */}
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-            {category}
-          </span>
-          <div className="flex items-center gap-1 text-slate-700 text-sm font-semibold">
-            <span className="text-amber-500">★</span> {rating}
-            <span className="text-xs text-slate-400 font-normal">
-              ({reviewsCount})
+      <div className="p-5 flex flex-col flex-1 justify-between">
+        <div>
+          <div className="flex items-center justify-between mb-2 gap-2">
+            {/* 💡 FIXED: Accesses the first element of Categories array or falls back */}
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 truncate">
+              {Categories[0] || "Adventure"}
             </span>
+            <div className="flex items-center gap-1 text-slate-700 text-sm font-semibold shrink-0">
+              <span className="text-amber-500">★</span> {typeof rating === "number" ? rating.toFixed(1) : "0.0"}
+              <span className="text-xs text-slate-400 font-normal">
+                ({reviewCount})
+              </span>
+            </div>
           </div>
-        </div>
 
-        <h3 className="text-lg font-bold text-slate-800 line-clamp-2 min-h-14 mb-4">
-          {title}
-        </h3>
+          <h3 className="text-lg font-bold text-slate-800 line-clamp-2 min-h-14 mb-4">
+            {title}
+          </h3>
+        </div>
 
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
           <div>
@@ -57,7 +67,7 @@ export default function ExperienceCard({ experience }) {
               From
             </span>
             <span className="text-xl font-extrabold text-slate-900">
-              ${price}
+              {currencySign}{price || "N/A"}
             </span>
             <span className="text-xs text-slate-500 font-medium">
               {" "}

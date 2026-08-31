@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import hero1 from "../../assets/hero1.jpg";
+import hero2 from "../../assets/hero2.jpg";
+import hero3 from "../../assets/hero3.jpg";
 
 // Mock slider data with real placeholder images
 const SLIDES = [
-  { image: "https://unsplash.com", alt: "Mandu historic architecture" },
-  { image: "https://unsplash.com", alt: "Maheshwar ghats by the river" },
-  { image: "https://unsplash.com", alt: "Orchha temples and culture" }
+  { image: hero1, alt: "Orchha" },
+  { image: hero2, alt: "Mandu" },
+  { image: hero3, alt: "Maheshwar" },
 ];
 
 const Hero = () => {
@@ -40,7 +43,8 @@ const Hero = () => {
             </span>
           </h1>
           <p className="mt-4 text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Discover local people, food, culture, hidden experiences, and businesses that make every destination unique.
+            Discover local people, food, culture, hidden experiences, and
+            businesses that make every destination unique.
           </p>
         </div>
 
@@ -57,7 +61,10 @@ const Hero = () => {
                 src={slide.image}
                 alt={slide.alt}
                 className="w-full h-full object-cover transform scale-100 transition-transform duration-5000ms ease-out"
-                style={{ transform: index === currentIndex ? 'scale(1.03)' : 'scale(1)' }}
+                style={{
+                  transform:
+                    index === currentIndex ? "scale(1.03)" : "scale(1)",
+                }}
               />
             </div>
           ))}
@@ -68,8 +75,18 @@ const Hero = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all transform hover:scale-105 duration-200"
             aria-label="Previous image"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
@@ -79,8 +96,18 @@ const Hero = () => {
             className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all transform hover:scale-105 duration-200"
             aria-label="Next image"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
 
@@ -95,32 +122,6 @@ const Hero = () => {
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Discovery & Tags Section */}
-        <div className="w-full max-w-4xl border border-gray-100 bg-white rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Explore</h2>
-              <p className="text-xs text-gray-400">Discover regional wonders</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end w-full sm:w-auto">
-            <span className="text-sm font-semibold text-gray-400 mr-1">Popular:</span>
-            {["Mandu", "Maheshwar", "Orchha", "Khajuraho"].map((tag) => (
-              <button
-                key={tag}
-                className="text-xs font-medium text-gray-600 bg-gray-50 hover:bg-blue-50 hover:text-blue-600 border border-gray-200 hover:border-blue-200 px-3 py-1.5 rounded-full transition-all cursor-pointer"
-              >
-                {tag}
-              </button>
             ))}
           </div>
         </div>

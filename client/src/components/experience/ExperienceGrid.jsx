@@ -1,63 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ExperienceCard from "./ExperienceCard";
 import ExperienceFilter from "./ExperienceFilter";
-
-// Immersive dataset containing categories matching the filter configurations
-const MOCK_EXPERIENCES = [
-  {
-    id: 1,
-    title: "Guided Sunrise Hot Air Balloon Expedition",
-    category: "Adventure",
-    duration: "3 hrs",
-    price: 240,
-    rating: 4.9,
-    reviewsCount: 128,
-    image: "https://unsplash.com",
-    isPopular: true,
-  },
-  {
-    id: 2,
-    title: "Traditional Kyoto Tea Ceremony & Kimono Experience",
-    category: "Culture",
-    duration: "2 hrs",
-    price: 85,
-    rating: 4.8,
-    reviewsCount: 94,
-    image: "https://unsplash.com",
-    isPopular: false,
-  },
-  {
-    id: 3,
-    title: "Authentic Street Food Tour & Market Walk",
-    category: "Food & Drink",
-    duration: "4 hrs",
-    price: 65,
-    rating: 4.9,
-    reviewsCount: 310,
-    image: "https://unsplash.com",
-    isPopular: true,
-  },
-  {
-    id: 4,
-    title: "Secret Waterfalls Deep Wilderness Trekking",
-    category: "Nature",
-    duration: "6 hrs",
-    price: 110,
-    rating: 4.7,
-    reviewsCount: 52,
-    image: "https://unsplash.com",
-    isPopular: false,
-  },
-];
+import { getExperience } from "../../services/experienceService.js"; // 💡 Import your active service file
 
 export default function ExperienceGrid() {
+  const [experiences, setExperiences] = useState([]); // 💡 FIXED: Active database storage replacing MOCK array data
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Compute live list values on component evaluation cycles
+   // 1. Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 4;
+
+  useEffect(() => {
+    const fetchPipelineData = async () => {
+      try {
+        const result = await getExperience();
+        
+        // Unpack nested payload matching your standard { success: true, data: [...] } structure
+        if (result && result.success) {
+          setExperiences(result.data);
+        } else {
+          setError("Could not parse matching experiences list from server.");
+        }
+      } catch (err) {
+        console.error("API Error fetching experience profiles:", err);
+        setError("Network error connecting to experiences repository data system.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPipelineData();
+  }, []);
+
+  // Compute live list values based on whether the 'Categories' schema array contains the selected value
   const filteredExperiences =
     selectedCategory === "All"
-      ? MOCK_EXPERIENCES
-      : MOCK_EXPERIENCES.filter((exp) => exp.category === selectedCategory);
+      ? experiences
+      : experiences.filter((exp) => 
+          exp.Categories && exp.Categories.some(cat => cat.toLowerCase() === selectedCategory.toLowerCase())
+        );
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center text-sm font-medium text-slate-500">
+        Loading local experiences portfolio...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-64 items-center justify-center text-sm font-medium text-red-500">
+        {error}
+      </div>
+    );
+  }
+
+  // 2. Calculate the slice of destinations for the current page
+  const totalPages = Math.ceil(experiences.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const currentExperiences = experiences.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+
+  // 3. Navigation Handlers
+  const handlePrev = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -86,9 +104,32 @@ export default function ExperienceGrid() {
       ) : (
         /* Structural CSS Grid Display Wrapper */
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredExperiences.map((experience) => (
-            <ExperienceCard key={experience.id} experience={experience} />
+          {currentExperiences.map((exp) => (
+            <ExperienceCard key={exp._id} experience={exp} /> // 💡 FIXED: Uses unique MongoDB '_id' parameter 
           ))}
+        </div>
+      )}
+
+       {/* Arrow Navigation Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 mt-4 pb-8">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-slate-100 border rounded-lg text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200"
+          >
+            &larr; Previous
+          </button>
+          <span className="text-sm font-medium text-slate-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-slate-100 border rounded-lg text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200"
+          >
+            Next &rarr;
+          </button>
         </div>
       )}
     </section>
