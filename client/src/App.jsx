@@ -19,8 +19,12 @@ const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Experience = lazy(() => import("./pages/Experience"));
-const BusinessDetails = lazy(() => import("./pages/Business"));
-const EventDetails = lazy(() => import("./pages/EventDetails"));
+const Business = lazy(() => import("./pages/Business"));
+const Event = lazy(() => import("./pages/Event"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 
 const App = () => {
   return (
@@ -32,8 +36,12 @@ const App = () => {
           <Route path="/plan" element={<PlanTrip />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/experience" element={<Experience />} />
-          <Route path="/business" element={<BusinessDetails />} />
-          <Route path="/event" element={<EventDetails />} />
+          <Route path="/business" element={<Business />} />
+          <Route path="/event" element={<Event />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
           {/* Authentication Access Gateways */}
           <Route path="/login" element={<Login />} />
