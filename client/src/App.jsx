@@ -26,6 +26,8 @@ const ContactUs = lazy(() => import("./pages/ContactUs"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 
+const DestinationDetails = lazy(() => import("./pages/DestinationDetail"));
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -42,6 +44,8 @@ const App = () => {
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+
+          <Route path="/destination/:id" element={<DestinationDetails />} />
 
           {/* Authentication Access Gateways */}
           <Route path="/login" element={<Login />} />

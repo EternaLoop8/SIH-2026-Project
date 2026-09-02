@@ -5,6 +5,8 @@ import destinationRoutes from "./routes/destinationRoutes.js";
 import businessRoutes from "./routes/businessRoutes.js";
 import experienceRoutes from "./routes/experienceRoutes.js";
 
+import destinationDetailRoutes from "./routes/destinationDetailRoutes.js";
+
 const app = express();
 
 // Middleware
@@ -38,5 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/destinations", destinationRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/experience", experienceRoutes);
+
+app.use("/api/destinations", destinationDetailRoutes);
 
 export default app;
