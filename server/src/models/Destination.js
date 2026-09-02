@@ -9,7 +9,6 @@ const destinationSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
     },
     state: {
       type: String,
@@ -41,14 +40,11 @@ const destinationSchema = new mongoose.Schema(
       type: {
         latitude: {
           type: Number,
-          required: [true, "Latitude is required"],
         },
         longitude: {
           type: Number,
-          required: [true, "Longitude is required"],
         },
       },
-      required: [true, "Location data object is required"],
     },
   },
   {
