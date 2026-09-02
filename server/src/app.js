@@ -13,7 +13,7 @@ app.use(express.json());
 // Allowed origins (Local development + Your live production frontend)
 const allowedOrigins = [
   "http://localhost:5173", 
-  "https://sih-2026-project-eosin.vercel.app/" 
+  "https://sih-2026-project-eosin.vercel.app" 
 ];
 
 app.use(
