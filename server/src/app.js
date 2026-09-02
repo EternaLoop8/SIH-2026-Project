@@ -7,6 +7,8 @@ import experienceRoutes from "./routes/experienceRoutes.js";
 
 import destinationDetailRoutes from "./routes/destinationDetailRoutes.js";
 
+import authRoutes from "./routes/authRoutes.js";
+
 const app = express();
 
 // Middleware
@@ -42,5 +44,7 @@ app.use("/api/business", businessRoutes);
 app.use("/api/experience", experienceRoutes);
 
 app.use("/api/destinations", destinationDetailRoutes);
+
+app.use('/api/auth', authRoutes);
 
 export default app;
