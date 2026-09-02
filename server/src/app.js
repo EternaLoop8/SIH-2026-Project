@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
@@ -46,5 +47,14 @@ app.use("/api/experience", experienceRoutes);
 app.use("/api/destinations", destinationDetailRoutes);
 
 app.use('/api/auth', authRoutes);
+
+//  Correct (Must explicitly have all 4 arguments)
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({
+    message: err.message,
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  });
+});
 
 export default app;

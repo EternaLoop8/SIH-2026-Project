@@ -34,6 +34,10 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  // Add this temporary line to monitor internal strings in your terminal:
+  console.log("DEBUG: Your current JWT_SECRET is:", process.env.JWT_SECRET);
+
+
   try {
     // Manually selecting +password because `select: false` hides it by default
     const user = await User.findOne({ email }).select('+password');

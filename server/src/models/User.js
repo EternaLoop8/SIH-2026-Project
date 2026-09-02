@@ -37,19 +37,12 @@ const userSchema = new mongoose.Schema(
 );
 
 // Pre-save Middleware: Hashes the password automatically before saving to the database
-userSchema.pre('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) {
-    return next();
-  }
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  // No next() or next(error) needed! Mongoose automatically proceeds when the promise resolves.
 });
 
 // Instance Method: Helper to compare entered password with the hashed password in DB

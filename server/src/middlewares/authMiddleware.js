@@ -30,12 +30,13 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
-// Authorize targeted roles
+// Correct implementation
 export const authorizeRoles = (...allowedRoles) => {
-  return (req, res, next) => {
+  return (req, res, next) => { // <--- This inner function MUST have all 3 arguments
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ message: `Forbidden: Role '${req.user?.role || 'Guest'}' lacks access.` });
     }
-    next();
+    next(); // <--- This will only work if 'next' is passed above
   };
 };
+
