@@ -9,7 +9,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "user", // Changed 'tourist' to 'user' to align perfectly with your Backend User model
+    role: "user", // 'user' represents the Tourist / Explorer role
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,27 +27,53 @@ const Login = () => {
 
     try {
       const loggedInUser = await login(formData.email, formData.password);
-      console.log("Login Component: Authentication successful. Logged in user payload:", loggedInUser);
+      console.log(
+        "Login Component: Authentication successful. Logged in user payload:",
+        loggedInUser,
+      );
 
       // Role Check Verification Loop
       if (loggedInUser.role !== formData.role) {
-        console.warn(`Login Component: Role mismatch detected. Chosen: ${formData.role}, Database: ${loggedInUser.role}`);
-        setErrorMessage(`Account exists, but your database profile role is recorded as '${loggedInUser.role}'. Please select the correct role option.`);
+        console.warn(
+          `Login Component: Role mismatch detected. Chosen: ${formData.role}, Database: ${loggedInUser.role}`,
+        );
+        setErrorMessage(
+          `Account exists, but your database profile role is recorded as '${loggedInUser.role}'. Please select the correct role option.`,
+        );
         setLoading(false);
         return;
       }
 
       // Safe Redirect Protocol Matrix
-      if (loggedInUser.role === "admin") {
-        console.log("Login Component: Redirecting client browser layout thread to /admin/settings");
-        navigate("/admin/settings");
-      } else {
-        console.log("Login Component: Redirecting client browser layout thread to /dashboard");
-        navigate("/dashboard");
+      switch (loggedInUser.role) {
+        case "admin":
+          console.log("Login Component: Redirecting to /admin-dashboard");
+          navigate("/admin-dashboard");
+          break;
+        case "business":
+          console.log("Login Component: Redirecting to /business-dashboard");
+          navigate("/business-dashboard");
+          break;
+        case "user":
+          console.log("Login Component: Redirecting to /tourist-dashboard");
+          navigate("/tourist-dashboard");
+          break;
+        default:
+          console.warn(
+            "Login Component: Unknown role, defaulting to fallback /dashboard",
+          );
+          navigate("/dashboard");
       }
     } catch (err) {
-      console.error("Login Component: Catch handler captured failure string:", err);
-      setErrorMessage(err || "Authentication pipeline failure. Verify your endpoint setup.");
+      console.error(
+        "Login Component: Catch handler captured failure string:",
+        err,
+      );
+
+      // FIX: Safely parse the backend error string instead of saving the raw object
+      const cleanMessage =
+        err.response?.data?.message || err.message || "Invalid credentials";
+      setErrorMessage(cleanMessage);
     } finally {
       setLoading(false);
     }
@@ -63,7 +89,6 @@ const Login = () => {
 
       <div className="mt-8 sm:mx-auto w-full max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-          
           {errorMessage && (
             <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded">
               <p className="text-sm text-red-700 font-medium">{errorMessage}</p>
@@ -112,7 +137,6 @@ const Login = () => {
                 value={formData.role}
                 onChange={handleChange}
               >
-                {/* Standardized options values to align perfectly with User model enums */}
                 <option value="user">Tourist / Explorer</option>
                 <option value="business">Business / Host</option>
                 <option value="admin">System Administrator</option>

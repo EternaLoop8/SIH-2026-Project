@@ -19,26 +19,27 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, [token]);
 
-  const handleLogin = async (email, password) => {
-    try {
-      console.log("Context: Calling named apiLogin service...");
-      // Call the renamed service function passing variables down
-      const data = await apiLogin(email, password);
+const handleLogin = async (email, password) => {
+  try {
+    console.log("Context: Calling named apiLogin service...");
+    
+    // FIX: Pass them as separate arguments, NOT wrapped in an object
+    const data = await apiLogin(email, password); 
 
-      const { token, ...userData } = data;
+    const { token, ...userData } = data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setToken(token);
+    setUser(userData);
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(userData));
+    return userData;
+  } catch (error) {
+    console.error("Context Error:", error);
+    throw error; // This passes the string error message back up to Login.jsx
+  }
+};
 
-      setToken(token);
-      setUser(userData);
 
-      return userData;
-    } catch (error) {
-      console.error("Context Error:", error);
-      throw error.response?.data?.message || "Operational failure";
-    }
-  };
 
   const handleRegister = async (userData) => {
     try {
