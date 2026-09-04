@@ -88,8 +88,11 @@ const Navbar = () => {
             </button>
 
             {/* Primary CTA Button */}
-            <button className="text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors cursor-pointer">
-              Become a Member
+            <button 
+              className="text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors cursor-pointer"
+              onClick={() => navigate("/become-partner")}
+              >
+              Become a Partner
             </button>
           </div>
 
@@ -196,8 +199,11 @@ const Navbar = () => {
             >
               Login
             </button>
-            <button className="w-full text-center text-sm font-medium bg-blue-600 text-white py-2 rounded-lg shadow-sm">
-              Become a Member
+            <button 
+              className="w-full text-center text-sm font-medium bg-blue-600 text-white py-2 rounded-lg shadow-sm"
+              onClick={() => navigate("/become-partner")}
+              >
+              Become a Partner
             </button>
           </div>
         </div>
