@@ -30,6 +30,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 
 const DestinationDetails = lazy(() => import("./pages/DestinationDetail"));
+const ExperienceDetails = lazy(() => import("./pages/ExperienceDetails"));
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
             />
 
             <Route path="/destination/:id" element={<DestinationDetails />} />
+            <Route path="/experience/:id" element={<ExperienceDetails />} />
 
             {/* Authentication Access Gateways */}
             <Route path="/login" element={<Login />} />

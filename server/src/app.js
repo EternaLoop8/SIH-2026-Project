@@ -7,6 +7,7 @@ import businessRoutes from "./routes/businessRoutes.js";
 import experienceRoutes from "./routes/experienceRoutes.js";
 
 import destinationDetailRoutes from "./routes/destinationDetailRoutes.js";
+import experienceDetailRoutes from "./routes/experienceDetailRoutes.js"
 
 import authRoutes from "./routes/authRoutes.js";
 
@@ -45,6 +46,7 @@ app.use("/api/business", businessRoutes);
 app.use("/api/experience", experienceRoutes);
 
 app.use("/api/destinations", destinationDetailRoutes);
+app.use("/api/experience", experienceDetailRoutes);
 
 app.use('/api/auth', authRoutes);
 
