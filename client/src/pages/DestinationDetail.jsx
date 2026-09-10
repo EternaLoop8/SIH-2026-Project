@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getDestinationById } from "../services/destinationDetailService.js";
+import { getDestinationDetailById } from "../services/destinationDetailService.js";
 
 export default function DestinationDetails() {
   const { id } = useParams();
@@ -23,7 +23,7 @@ export default function DestinationDetails() {
           throw new Error("Destination ID is missing from the URL.");
         }
 
-        const result = await getDestinationById(id);
+        const result = await getDestinationDetailById(id);
 
         console.log("GET DESTINATION RESPONSE:", result);
 
