@@ -144,19 +144,19 @@ const Navbar = () => {
             </li>
             <li
               className="block px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 cursor-pointer"
-              onClick={() => navigate("/experience/:id")}
+              onClick={() => navigate("/experience")}
             >
               Experience
             </li>
             <li
               className="block px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 cursor-pointer"
-              onClick={() => navigate("/event/:id")}
+              onClick={() => navigate("/event")}
             >
               Events
             </li>
             <li
               className="block px-3 py-2 rounded-md hover:bg-gray-100 hover:text-blue-600 cursor-pointer"
-              onClick={() => navigate("/business/:id")}
+              onClick={() => navigate("/business")}
             >
               Business
             </li>
