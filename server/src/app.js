@@ -5,11 +5,13 @@ import cors from "cors";
 import destinationRoutes from "./routes/destinationRoutes.js";
 import businessRoutes from "./routes/businessRoutes.js";
 import experienceRoutes from "./routes/experienceRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
 
 import destinationDetailRoutes from "./routes/destinationDetailRoutes.js";
 import experienceDetailRoutes from "./routes/experienceDetailRoutes.js"
 
 import authRoutes from "./routes/authRoutes.js";
+import tripRoutes from "./routes/tripRoutes.js";
 
 const app = express();
 
@@ -44,11 +46,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/destinations", destinationRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/experience", experienceRoutes);
+app.use("/api/events", eventRoutes);
 
 app.use("/api/destinations", destinationDetailRoutes);
 app.use("/api/experience", experienceDetailRoutes);
 
 app.use('/api/auth', authRoutes);
+app.use("/api/trips", tripRoutes);
 
 //  Correct (Must explicitly have all 4 arguments)
 app.use((err, req, res, next) => {
