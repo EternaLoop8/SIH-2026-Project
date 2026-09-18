@@ -67,6 +67,9 @@ export const getEventById = async (req, res) => {
 // ==============================
 
 export const createEvent = async (req, res) => {
+  // ADD THESE TWO LOGS HERE:
+  console.log("=== DEBUG REQ.BODY ===", req.body);
+  console.log("=== DEBUG REQ.FILE ===", req.file);
   try {
     const {
       title,
